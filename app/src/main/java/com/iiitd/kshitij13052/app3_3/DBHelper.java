@@ -2,6 +2,7 @@ package com.iiitd.kshitij13052.app3_3;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
@@ -14,7 +15,9 @@ import java.util.ArrayList;
  */
 public class DBHelper extends SQLiteOpenHelper
 {
-
+    Context context = App3_3.getContext();
+    public static final String PART = "Database";
+    public static final String NAME = "Name";
     public static final String DATABASE_NAME = "Information.db";
     public static final String TABLE_NAME = "info";
     public static final String COLUMN_ID = "id";
@@ -29,6 +32,13 @@ public class DBHelper extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("create table info " + "(id integer primary key, name text,age text)");
+        SharedPreferences settings = context.getSharedPreferences(PART, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor;
+        editor = settings.edit();
+        editor.putString(NAME, DATABASE_NAME);
+        editor.commit();
+
+
     }
 
     @Override
@@ -40,10 +50,10 @@ public class DBHelper extends SQLiteOpenHelper
     public boolean insertInfo(String name, String age)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("name", name);
-        contentValues.put("age", age);
-        db.insert(TABLE_NAME, null, contentValues);
+        ContentValues cv = new ContentValues();
+        cv.put("name", name);
+        cv.put("age", age);
+        db.insert(TABLE_NAME, null, cv);
         return true;
     }
 
@@ -57,32 +67,32 @@ public class DBHelper extends SQLiteOpenHelper
 
     public ArrayList<String> getAllNames()
     {
-        ArrayList<String> array_list = new ArrayList<String>();
+        ArrayList<String> names = new ArrayList<String>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from info", null );
-        res.moveToFirst();
+        Cursor cur =  db.rawQuery( "select * from info", null );
+        cur.moveToFirst();
 
-        while(res.isAfterLast() == false){
-            array_list.add(res.getString(res.getColumnIndex(COLUMN_NAME)));
-            res.moveToNext();
+        while(cur.isAfterLast() == false){
+            names.add(cur.getString(cur.getColumnIndex(COLUMN_NAME)));
+            cur.moveToNext();
         }
-        return array_list;
+        return names;
     }
 
     public ArrayList<String> getAllAges()
     {
-        ArrayList<String> array_list = new ArrayList<String>();
+        ArrayList<String> ages = new ArrayList<String>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from info", null );
-        res.moveToFirst();
+        Cursor cur =  db.rawQuery( "select * from info", null );
+        cur.moveToFirst();
 
-        while(res.isAfterLast() == false){
-            array_list.add(res.getString(res.getColumnIndex(COLUMN_AGE)));
-            res.moveToNext();
+        while(cur.isAfterLast() == false){
+            ages.add(cur.getString(cur.getColumnIndex(COLUMN_AGE)));
+            cur.moveToNext();
         }
-        return array_list;
+        return ages;
     }
 
 }
